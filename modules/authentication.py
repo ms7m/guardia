@@ -3,11 +3,17 @@ class Authentication:
     username = "InternalDebugging"
     password = "None"
 
+class RedisAuthentication:
+  password = None
 
 class SettingsConfiguration:
-    mongoHost = "localhost",
+    mongoHost = "localhost"
     mongoPort = 22100
     authentication = Authentication
+
+    redisHost = "localhost"
+    redisPort = 6379
+    redisAuthentication = RedisAuthentication
 
 """
  db.createUser(

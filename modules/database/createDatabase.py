@@ -10,11 +10,11 @@ class MongoDB:
         try:
             self._mongoConnection = MongoClient(
                 host=self._mongoHost,
-                port=self._mongoPort,
-                username=self._mongoAuthentication.username,
-                password=self._mongoAuthentication.password,
-                authSource="admin",
-                authMechanism='SCRAM-SHA-256'
+                port=self._mongoPort
+                #username=self._mongoAuthentication.username,
+                #password=self._mongoAuthentication.password,
+                #authSource="admin",
+                #authMechanism='SCRAM-SHA-256'
             )
         except Exception as error:
             logger.error(f"Unable to create Mongo object. {error}")
@@ -55,3 +55,4 @@ class MongoDB:
         self._mongoAuthentication = self._settingsConfiguration.authentication
         self._generateMongo()
         self.resulting = self._parseMongoDatabases()
+        logger.info('Initalized Mongo.')

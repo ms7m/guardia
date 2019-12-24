@@ -17,8 +17,9 @@ class VerifyUser:
                 logger.error(f'Error on PrimaryGet: {error}')
                 logger.error(f"Error on Dump: {dumped_error}")
             raise Exception('Unable to load primary Database.')
-
-    def __init__(self, mongoDbObject):
+    
+    def __init__(self, mongoDbObject, redisConnection):
+        self.redisConnection = redisConnection
         if isinstance(mongoDbObject, MongoDB) == True:
             self._mongoDb = mongoDbObject
             attempt_loadPrimaries = self._loadPrimaryDatabase()
@@ -28,6 +29,8 @@ class VerifyUser:
                 raise Exception('Unable to load primary database.')
         else:
             raise ValueError(f'Improper Object. Expected MongoDB. {mongoDbObject}')
+        logger.info('Initalized Verify User.')
+
 
     def verify_user(self, configuration):
         # TODO: Integrate with Trackrr Core Reference File
@@ -36,9 +39,7 @@ class VerifyUser:
             if configuration.provided_id_bool == False:
                 # We weren't provided an ID :(
                 query_to_push = {
-                    "firstLinkedServiceInformation": {
-                        "serviceUniqueId": configuration.serviceUniqueId
-                    }
+                    "firstLinkedServiceInformation.serviceUniqueId": configuration.serviceUniqueId
                 }
             elif configuration.provided_id_bool == True:
                 # Nice, we were provided a DB id
@@ -49,7 +50,8 @@ class VerifyUser:
             else:
                 raise Exception("Did not provide a provided_id bool.")
         except Exception as error:
-            raise Exception("Error on checkcing for configProvided!.")
+            logger.debug(f"Dropped Attrs: {configuration.__dict__}")
+            raise Exception(f"Error on checkcing for configProvided!. --> {error}")
         
         try:
             attempt_query = self.primary_database.find_one(
@@ -59,8 +61,22 @@ class VerifyUser:
             # Honestly, while we already have the data
             # might as well add it to a cache for PullUser
             
-            
-            if attempt_query: 
+            if attempt_query:
+                try:
+                    redis_action = self.redisConnection.cache_result(
+                        str(attempt_query['_id']),
+                        attempt_query
+                    )
+                    if redis_action == True:
+                        return True, 0, attempt_query['_id']
+                    else:
+                        logger.error("Unable to add to redis.")
+                        return True, 2, attempt_query
+
+                except Exception as error:
+                    logger.error(f'Unable to add to redis. --> {error}')
+                    return True, 2, attempt_query
+                
                 return True, 0, attempt_query['_id']
             else:
                 return False, 1, "Unable to verify. User isn't in database."
