@@ -9,6 +9,7 @@ Using a "service unique id". (For example, Spotify with a ID for a user).
 - Link different services to one account
 - Provide data for User-Specific actions
 - Pull User Data
+  - Pulling User should be cachced.
 
 ***
 
