@@ -24,3 +24,9 @@ Using a "service unique id". (For example, Spotify with a ID for a user).
 # Tests
 
 None at this time.
+
+***
+# Endpoints
+
+Endpoints can be found in the ```main.py```.
+
