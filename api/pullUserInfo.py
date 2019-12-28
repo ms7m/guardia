@@ -51,14 +51,18 @@ class PullUserInforamtionFromService:
             "serviceUniqueId"
         ]
 
+            
         try:
-            result = self._pullUser.pull_user_from_service(
+            result_status, result_code, result_message = self._pullUser.pull_user_from_service(
                 self._verifyUser,
                 req.get_param(
                     "serviceUniqueId"
                 )
             )
-            resp.media = result
+            resp.media = {
+                "status": result_status,
+                "id": str(result_message)
+            }
         except Exception as error:
             logger.error(f"PullUserInforamtionFromService Complete failure. {error}")
             resp.media = {
