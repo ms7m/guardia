@@ -8,11 +8,11 @@ class RedisAuthentication:
 
 class SettingsConfiguration:
     mongoHost = "localhost"
-    mongoPort = 22100
+    mongoPort = 55551
     authentication = Authentication
 
     redisHost = "localhost"
-    redisPort = 6379
+    redisPort = 55552
     redisAuthentication = RedisAuthentication
 
 """
