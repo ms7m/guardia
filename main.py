@@ -14,6 +14,41 @@ from api.pullUserInfo import PullUserInformation, PullUserInforamtionFromService
 from loguru import logger
 from waitress import serve
 
+from dulwich.repo import Repo
+import os
+
+
+# Splashscreen information
+def createSplashScreenLogo():
+    current_Splash = open("splashscreen", "r")
+    for line in current_Splash.readlines():
+        print(line)
+
+def is_development_mode_active():
+    try:
+        if os.getenv("DEBUG_Guardia") == "active":
+            print("Debug Mode Is Active.")
+        else:
+            print('Debug Mode is not Active.')
+    except Exception as error:
+        print("Unable to get OS Environment Variable.")
+
+def displayLatest_development():
+    try:
+        current_repo = Repo(".")
+        git_head = current_repo.head()
+        git_last_commit = current_repo[git_head]
+    except Exception as error:
+        print('unable to get git information.')
+        return
+    
+    try:
+        print(f"Last Commit: {git_last_commit.id.decode()}")
+        print(f"Commit Author: {git_last_commit.author.decode()}")
+        print(f"Commit Message: {git_last_commit.message.decode()}")
+    except Exception as error:
+        print('Unable to get git information.')
+
 
 if __name__ == "__main__":
     mongo = MongoDB(SettingsConfiguration)
@@ -22,6 +57,13 @@ if __name__ == "__main__":
     crt_user = CreateUser(mongo, vrf_user)
     pull_user = PullUser(mongo, redis)
 
+
+    os.system('clear')
+    createSplashScreenLogo()
+    print("-" * 24)
+    displayLatest_development()
+    is_development_mode_active()
+    
     api = falcon.API()
 
     api.add_route("/newUser", UserCreation(crt_user))
