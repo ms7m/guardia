@@ -49,6 +49,28 @@ def displayLatest_development():
         print('Unable to get git information.')
 
 
+def api():
+    mongo = MongoDB(SettingsConfiguration)
+    redis = RedisConnection(SettingsConfiguration)
+    vrf_user = VerifyUser(mongo, redis)
+    crt_user = CreateUser(mongo, vrf_user)
+    pull_user = PullUser(mongo, redis)
+
+
+    os.system('clear')
+    createSplashScreenLogo()
+    print("-" * 24)
+    displayLatest_development()
+    is_development_mode_active()
+    
+    api = falcon.API()
+
+    api.add_route("/newUser", UserCreation(crt_user))
+    api.add_route("/serviceAdd/{user_id}", NewServiceAddition(crt_user))
+    api.add_route("/pullUser/{user_id}", PullUserInformation(pull_user))
+    api.add_route("/pullFromService", PullUserInforamtionFromService(pull_user, vrf_user))
+    return api
+
 if __name__ == "__main__":
     mongo = MongoDB(SettingsConfiguration)
     redis = RedisConnection(SettingsConfiguration)
