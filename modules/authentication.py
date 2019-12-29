@@ -7,7 +7,7 @@ class RedisAuthentication:
   password = None
 
 class SettingsConfiguration:
-    mongoHost = "localhost"
+    mongoHost = "192.168.1.21"
     mongoPort = 55551
     authentication = Authentication
 

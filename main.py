@@ -21,8 +21,7 @@ import os
 # Splashscreen information
 def createSplashScreenLogo():
     current_Splash = open("splashscreen", "r")
-    for line in current_Splash.readlines():
-        print(line)
+    print(current_Splash.read())
 
 def is_development_mode_active():
     try:
